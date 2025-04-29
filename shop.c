@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include "buyer.h"
+#include "items.h"
 
-#define MENU_SIZE 20
-#define NAME_SIZE 30
 //#define NAME_FORMAT "%" #NAME_SIZE "s"
 
 
@@ -13,18 +13,13 @@ struct {
     char *oper_name;
 
 } menu [] = {
-
+    {"exit"},
     {"add_buyer"},
+    {"see_buyers"},
+    {"add_item"},
+    {"see_items"},
 };
 
-typedef struct grocery_items {
-
-    char item_name[NAME_SIZE +1];
-    float price;
-    int stock;
-    struct grocery_items *next_item;
-
-} grocery_items;
 
 struct cart {
 
@@ -32,22 +27,16 @@ struct cart {
     struct cart *next_item;
 };
 
-typedef struct buyer{
 
-    char name[NAME_SIZE +1];
-    struct buyer *next_buyer;
-    struct cart *grocery_items_bought;
-    float total_cost;
-} buyer;
 
-void add_buyer(struct buyer **buyer);
 
 int main(){
     
     int menu_len = sizeof(menu) / sizeof(menu[0]);
-    char selected_oper[MENU_SIZE+1];
-    bool oper_found = true;
+    //char selected_oper[MENU_SIZE+1];
+    int operation = 0;
     struct buyer *all_buyers = NULL;
+    struct grocery_items *all_items = NULL;
 
     printf("Welcome to Wallmart!\n");
     
@@ -56,57 +45,38 @@ int main(){
 
         for (int i = 0; i < menu_len; i++ ){
             
-            printf("%d. %s\n", i+1 , menu[i].oper_name);
+            printf("%d. %s\n", i , menu[i].oper_name);
         }
 
         printf("\nSelect operation (type exit to quit): ");
-        scanf("%20s", selected_oper);
+       // scanf("%20s", selected_oper);
+        scanf("%d", &operation);
+        printf("\n");
+        switch(operation){
+            case 0:
+                printf("Leaving store, gobye...\n");
+                return 0;
+            case 1:
+               add_buyer(&all_buyers);
+               break;
+            case 2:                             
+               see_buyers(all_buyers);
+               break;
+            case 3:
+               add_item(&all_items);
+               break;
+            case 4:
+               see_items(all_items);
+               break;
+            default:
+                printf("\nOpertion was not found try aggain...\n");
 
-        if (strcmp(selected_oper, "exit") == 0){
-            printf("Leaving store, gobye...\n");
-            return 0;
-        }
+        }         
+        
 
-        for(int i = 0; i < menu_len; i++){
-
-            
-                if (strcmp("add_buyer", menu[i].oper_name) == 0) {
-                   oper_found = true;
-                   add_buyer(&all_buyers);
-                   break;
-                }
-
-            oper_found = false;
-        }
-
-        if (oper_found == false){
-            printf("\nOpertion was not found try aggain...\n");
-        }
     }
 
 
-}
-
-void add_buyer(struct buyer **buyer){
-
-    printf("\nAdding new buyer..\n");
-    struct buyer *new_buyer;
-    new_buyer = malloc(sizeof(struct buyer));
-
-    if (new_buyer == NULL){
-
-       printf("\nError in malloc add_buyer..\n");
-       exit(EXIT_FAILURE);
-    }
-
-    printf("Enter buyers name: ");
-    scanf("%s", new_buyer->name);
-    new_buyer->total_cost = 0.0f;
-    new_buyer->grocery_items_bought = NULL;
-    new_buyer->next_buyer = *buyer;
-    *buyer = new_buyer;
-    getchar();
-    printf("\nNew buyer added succesfully!\n");
 }
 
 
